@@ -1,0 +1,247 @@
+<grip:Pipeline>
+  <sources>
+    <grip:ImageFile>
+      <property name="path" value="C:\Users\Samuel\Documents\VisionCode2016\samplefieldimage_small.png"/>
+    </grip:ImageFile>
+  </sources>
+  <steps>
+    <grip:Step name="Blur">
+      <grip:Input step="0" socket="0"/>
+      <grip:Input step="0" socket="1">
+        <value>BOX</value>
+      </grip:Input>
+      <grip:Input step="0" socket="2">
+        <value>2.162161818495741</value>
+      </grip:Input>
+      <grip:Output step="0" socket="0" previewed="false"/>
+    </grip:Step>
+    <grip:Step name="RGB Threshold">
+      <grip:Input step="1" socket="0"/>
+      <grip:Input step="1" socket="1">
+        <value>
+          <double>83.47122105334302</double>
+          <double>215.83617747440272</double>
+        </value>
+      </grip:Input>
+      <grip:Input step="1" socket="2">
+        <value>
+          <double>81.6366893353222</double>
+          <double>210.6143311510314</double>
+        </value>
+      </grip:Input>
+      <grip:Input step="1" socket="3">
+        <value>
+          <double>97.2302127656319</double>
+          <double>210.61434775082324</double>
+        </value>
+      </grip:Input>
+      <grip:Output step="1" socket="0" previewed="false"/>
+    </grip:Step>
+    <grip:Step name="HSV Threshold">
+      <grip:Input step="2" socket="0"/>
+      <grip:Input step="2" socket="1">
+        <value>
+          <double>104.24459906790753</double>
+          <double>127.16723315138053</double>
+        </value>
+      </grip:Input>
+      <grip:Input step="2" socket="2">
+        <value>
+          <double>4.586329841785293</double>
+          <double>103.56656452087819</double>
+        </value>
+      </grip:Input>
+      <grip:Input step="2" socket="3">
+        <value>
+          <double>46.78057575826164</double>
+          <double>202.78156996587032</double>
+        </value>
+      </grip:Input>
+      <grip:Output step="2" socket="0" previewed="false"/>
+    </grip:Step>
+    <grip:Step name="HSL Threshold">
+      <grip:Input step="3" socket="0"/>
+      <grip:Input step="3" socket="1">
+        <value>
+          <double>106.1870502053405</double>
+          <double>124.7098976109215</double>
+        </value>
+      </grip:Input>
+      <grip:Input step="3" socket="2">
+        <value>
+          <double>0.0</double>
+          <double>75.71672852942562</double>
+        </value>
+      </grip:Input>
+      <grip:Input step="3" socket="3">
+        <value>
+          <double>69.71222715412112</double>
+          <double>255.0</double>
+        </value>
+      </grip:Input>
+      <grip:Output step="3" socket="0" previewed="false"/>
+    </grip:Step>
+    <grip:Step name="bitwise_and">
+      <grip:Input step="4" socket="0"/>
+      <grip:Input step="4" socket="1"/>
+      <grip:Output step="4" socket="0" previewed="false"/>
+    </grip:Step>
+    <grip:Step name="bitwise_and">
+      <grip:Input step="5" socket="0"/>
+      <grip:Input step="5" socket="1"/>
+      <grip:Output step="5" socket="0" previewed="false"/>
+    </grip:Step>
+    <grip:Step name="erode">
+      <grip:Input step="6" socket="0"/>
+      <grip:Input step="6" socket="1"/>
+      <grip:Input step="6" socket="2"/>
+      <grip:Input step="6" socket="3">
+        <value>2.0</value>
+      </grip:Input>
+      <grip:Input step="6" socket="4">
+        <value>BORDER_CONSTANT</value>
+      </grip:Input>
+      <grip:Input step="6" socket="5"/>
+      <grip:Output step="6" socket="0" previewed="false"/>
+    </grip:Step>
+    <grip:Step name="Find Contours">
+      <grip:Input step="7" socket="0"/>
+      <grip:Input step="7" socket="1">
+        <value>false</value>
+      </grip:Input>
+      <grip:Output step="7" socket="0" previewed="false"/>
+    </grip:Step>
+    <grip:Step name="Filter Contours">
+      <grip:Input step="8" socket="0"/>
+      <grip:Input step="8" socket="1">
+        <value>36.0</value>
+      </grip:Input>
+      <grip:Input step="8" socket="2">
+        <value>107.0</value>
+      </grip:Input>
+      <grip:Input step="8" socket="3">
+        <value>0</value>
+      </grip:Input>
+      <grip:Input step="8" socket="4">
+        <value>1000</value>
+      </grip:Input>
+      <grip:Input step="8" socket="5">
+        <value>0</value>
+      </grip:Input>
+      <grip:Input step="8" socket="6">
+        <value>1000</value>
+      </grip:Input>
+      <grip:Output step="8" socket="0" previewed="false"/>
+    </grip:Step>
+    <grip:Step name="Convex Hulls">
+      <grip:Input step="9" socket="0"/>
+      <grip:Output step="9" socket="0" previewed="false"/>
+    </grip:Step>
+    <grip:Step name="Filter Contours">
+      <grip:Input step="10" socket="0"/>
+      <grip:Input step="10" socket="1">
+        <value>11000.0</value>
+      </grip:Input>
+      <grip:Input step="10" socket="2">
+        <value>0.0</value>
+      </grip:Input>
+      <grip:Input step="10" socket="3">
+        <value>0</value>
+      </grip:Input>
+      <grip:Input step="10" socket="4">
+        <value>1000</value>
+      </grip:Input>
+      <grip:Input step="10" socket="5">
+        <value>0</value>
+      </grip:Input>
+      <grip:Input step="10" socket="6">
+        <value>1000</value>
+      </grip:Input>
+      <grip:Output step="10" socket="0" previewed="true"/>
+    </grip:Step>
+    <grip:Step name="Publish ContoursReport">
+      <grip:Input step="11" socket="0"/>
+      <grip:Input step="11" socket="1">
+        <value>visionContoursReport</value>
+      </grip:Input>
+      <grip:Input step="11" socket="2">
+        <value>true</value>
+      </grip:Input>
+      <grip:Input step="11" socket="3">
+        <value>true</value>
+      </grip:Input>
+      <grip:Input step="11" socket="4">
+        <value>true</value>
+      </grip:Input>
+      <grip:Input step="11" socket="5">
+        <value>true</value>
+      </grip:Input>
+      <grip:Input step="11" socket="6">
+        <value>true</value>
+      </grip:Input>
+    </grip:Step>
+  </steps>
+  <connections>
+    <grip:Connection>
+      <grip:Output step="0" socket="0" previewed="false"/>
+      <grip:Input step="2" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="3" socket="0" previewed="false"/>
+      <grip:Input step="5" socket="1"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="6" socket="0" previewed="false"/>
+      <grip:Input step="7" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="9" socket="0" previewed="false"/>
+      <grip:Input step="10" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="7" socket="0" previewed="false"/>
+      <grip:Input step="8" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="0" socket="0" previewed="false"/>
+      <grip:Input step="1" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="1" socket="0" previewed="false"/>
+      <grip:Input step="4" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="0" socket="0" previewed="false"/>
+      <grip:Input step="3" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="8" socket="0" previewed="false"/>
+      <grip:Input step="9" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="2" socket="0" previewed="false"/>
+      <grip:Input step="4" socket="1"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="4" socket="0" previewed="false"/>
+      <grip:Input step="5" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="5" socket="0" previewed="false"/>
+      <grip:Input step="6" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output source="0" socket="0" previewed="false"/>
+      <grip:Input step="0" socket="0"/>
+    </grip:Connection>
+    <grip:Connection>
+      <grip:Output step="10" socket="0" previewed="true"/>
+      <grip:Input step="11" socket="0"/>
+    </grip:Connection>
+  </connections>
+  <settings>
+    <networkProtocol>NONE</networkProtocol>
+    <teamNumber>0</teamNumber>
+    <networkTablesServer></networkTablesServer>
+  </settings>
+</grip:Pipeline>
