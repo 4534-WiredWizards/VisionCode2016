@@ -1,0 +1,1 @@
+To install opencv for python, follow instructions here. We are using x86 cv2 v.3.1.0
