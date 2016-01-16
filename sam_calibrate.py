@@ -12,6 +12,7 @@ highs = None
 lowv = None
 highv = None
 displayThreshold = False
+clickedYet = False
 
 
 ### END GLOBALS ###
@@ -34,13 +35,15 @@ def clickFunction(event, x, y, flags, param):
     global frame,hsv
     global lowh,highh,lows,highs,lowv,highv
     global displayThreshold
+    global clickedYet
 
     if event == cv2.EVENT_RBUTTONUP:
         displayThreshold = not displayThreshold
 
     if event == cv2.EVENT_LBUTTONUP:
         # get the hsv at the location
-        h,s,v = hsv[x,y]
+        h,s,v = hsv[y,x]
+        print ((y,x),(h,s,v))
         if h < lowh:
             lowh = h
         if h > highh:
@@ -53,18 +56,15 @@ def clickFunction(event, x, y, flags, param):
             lowv = v
         if v > highv:
             highv = v
-        if not lowh == None:
+        if not clickedYet:
+            clickedYet = True
             lowh = h
-        if not highh == None:
             highh = h
-        if not lows == None:
             lows = s
-        if not highs == None:
             highs = s
-        if not lowv == None:
             lowv = v
-        if not highv == None:
             highv = v
+        print "Current bounds (lowh,lows,lowv,highh,highs,highv)"
         print (lowh,lows,lowv,highh,highs,highv)
 
 ### END FUNCTIONS ###
@@ -75,6 +75,15 @@ cv2.namedWindow("frame")
 cv2.setMouseCallback("frame",clickFunction)
 
 displayThreshold = False
+
+# print instructions
+print "Calibration program started..."
+print "Left click to include that value in calibration,"
+print "Each left click expands the range to include that value."
+print "Right click to toggle seeing what the mask looks like."
+print "After each click, the coordinates and hsv values are printed, then the current range."
+print "Press Q to exit."
+print ""
 
 while(True):
     # capture each frame
