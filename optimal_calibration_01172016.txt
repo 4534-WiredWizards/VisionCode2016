@@ -1,0 +1,4 @@
+Exposure: -15
+
+Current bounds low(h,s,v) high(h,s,v) low(b,g,r) high(b,g,r)
+((76, 208, 78), (81, 255, 232), (54, 78, 0), (146, 232, 23))
