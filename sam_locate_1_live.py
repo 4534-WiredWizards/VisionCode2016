@@ -8,6 +8,18 @@ displayThreshold = False
 ### END GLOBALS ###
 ### FUNCTIONS ###
 
+def countCameras():
+    ret = 5
+    for i in range(0,5):
+        tempCam = cv2.VideoCapture(i)
+        res = tempCam.isOpened()
+        tempCam.release()
+        print i
+        if res is True:
+            ret = i-1
+    print ret
+    return ret
+
 def clickFunc(evt,x,y,flags,param):
     global displayThreshold
 
@@ -17,7 +29,7 @@ def clickFunc(evt,x,y,flags,param):
 ### END FUNCTIONS ###
 
 # instantiate the video capture object
-cap = cv2.VideoCapture("video.avi")
+cap = cv2.VideoCapture(countCameras())
 
 # set exposure
 #cap.set(15, 0)
@@ -38,25 +50,27 @@ print ""
 
 while(True):
     #print cap.get(15)
-    #cap.set(15,-15);
+    cap.set(15,-15);
 
     # capture each frame
     ret, frame = cap.read()
 
-    cap.set(cv2.CAP_PROP_FPS,12)
-    print cap.get(cv2.CAP_PROP_FPS)
+    #cap.set(cv2.CAP_PROP_FPS,12)
+    #print cap.get(cv2.CAP_PROP_FPS)
 
+    '''
     if frame is None:
         cap.set(cv2.CAP_PROP_POS_FRAMES,0)
         continue;
+    '''
 
     # Our operations on the frame come here
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    hsvLow = np.array([76,208,78])
-    hsvHigh = np.array([81,255,232])
-    bgrLow = np.array([54,78,0])
-    bgrHigh = np.array([146,232,23])
+    hsvLow = np.array([60,255,10])
+    hsvHigh = np.array([68,255,64])
+    bgrLow = np.array([0,10,0])
+    bgrHigh = np.array([7,64,0])
 
     mask = cv2.inRange(hsv, hsvLow, hsvHigh)
     mask2 = cv2.inRange(frame, bgrLow, bgrHigh)
@@ -86,7 +100,7 @@ while(True):
     else:
         cv2.imshow('frame',bw)
     
-    if cv2.waitKey(0) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
     
 

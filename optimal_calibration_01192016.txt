@@ -1,0 +1,6 @@
+At Makerspace
+
+Exposure -15 (-11)
+
+Current bounds low(h,s,v) high(h,s,v) low(b,g,r) high(b,g,r)
+((60, 255, 10), (68, 255, 64), (0, 10, 0), (7, 64, 0))
