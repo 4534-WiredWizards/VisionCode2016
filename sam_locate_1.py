@@ -1,0 +1,78 @@
+import numpy as np
+import cv2
+
+### GLOBALS ###
+
+displayThreshold = False
+
+### END GLOBALS ###
+### FUNCTIONS ###
+
+def clickFunc(evt,x,y,flags,param):
+    global displayThreshold
+
+    if evt == cv2.EVENT_LBUTTONDOWN:
+        displayThreshold = not displayThreshold
+
+### END FUNCTIONS ###
+
+# instantiate the video capture object
+cap = cv2.VideoCapture("video.avi")
+
+# set exposure
+#cap.set(15, 0)
+
+cv2.namedWindow("frame")
+cv2.setMouseCallback("frame",clickFunc)
+
+#displayThreshold = False
+
+# print instructions
+print "Calibration program started..."
+print "Left click to include that value in calibration,"
+print "Each left click expands the range to include that value."
+print "Right click to toggle seeing what the mask looks like."
+print "After each click, the coordinates and hsv values are printed, then the current range."
+print "Press Q to exit."
+print ""
+
+while(True):
+    #print cap.get(15)
+    #cap.set(15,-15);
+
+    # capture each frame
+    ret, frame = cap.read()
+
+    cap.set(cv2.CAP_PROP_FPS,12)
+    print cap.get(cv2.CAP_PROP_FPS)
+
+    if frame is None:
+        cap.set(cv2.CAP_PROP_POS_FRAMES,0)
+        continue;
+
+    # Our operations on the frame come here
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    hsvLow = np.array([76,208,78])
+    hsvHigh = np.array([81,255,232])
+    bgrLow = np.array([54,78,0])
+    bgrHigh = np.array([146,232,23])
+
+    mask = cv2.inRange(hsv, hsvLow, hsvHigh)
+    mask2 = cv2.inRange(frame, bgrLow, bgrHigh)
+
+    bw = cv2.bitwise_and(mask,mask2)
+    
+    # Display the resulting frame
+    if not displayThreshold:
+        cv2.imshow('frame',frame)
+    else:
+        cv2.imshow('frame',bw)
+    
+    if cv2.waitKey(0) & 0xFF == ord('q'):
+        break
+    
+
+# When everything done, release the capture
+cap.release()
+cv2.destroyAllWindows()
