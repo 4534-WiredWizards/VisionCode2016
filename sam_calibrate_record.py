@@ -1,6 +1,18 @@
 import numpy as np
 import cv2
 
+###
+#
+# sam_calibrate_record.py | A calibration recording program
+#
+# This program doesn't really have to do with calibration, it records
+# the camera frames to a video file. It is not actually the .avi format, but
+# you select a codec when you run it.
+#
+# Not important anymore, we have our test video.
+#
+###
+
 ### GLOBALS ###
 
 frame = None

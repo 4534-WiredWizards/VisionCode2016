@@ -1,16 +1,7 @@
 import numpy as np
 import cv2
 import math
-
-###
-# 
-# sam_locate_2_live.py | A live camera version of sam_locate_2.py
-#
-# I'm not documenting this file extensively. It's very similar to sam_locate_2,
-# only it captures from the camera. The existing camera documentation in calibrate
-# and the method documentation in sam_locate_2 should be enough to understand.
-# 
-###
+import random
 
 ### GLOBALS ###
 
@@ -211,22 +202,55 @@ def drawPoint(img,pt,color=(0,255,0)):
 def distance(p0,p1):
     return math.sqrt((p0[0] - p1[0])**2 + (p0[1] - p1[1])**2)
 
-def countCameras():
-    ret = 5
-    for i in range(0,5):
-        tempCam = cv2.VideoCapture(i)
-        res = tempCam.isOpened()
-        tempCam.release()
-        print i
-        if res is True:
-            ret = i-1
-    print ret
-    return ret
+def findOrientation(corners):
+    # returns -1 for small end left, 1 for small end right, and 0 if perfectly square
+    # returns false if it cant determine orientation
+    tl,tr,br,bl = corners
+    if tr[0] == tl[0] and br[0] == bl[0]:
+        return 0
+    if tl[0] >= tr[0] and bl[0] <= br[0]:
+        return -1
+    if tr[0] >= tl[0] and br[0] <= bl[0]:
+        return 1
+    return False        
+
+def findTransform(contour,corners):
+    global w,h
+    
+    # now that we have our rectangle of points, let's compute
+    # the width of our new image
+    (tl, tr, br, bl) = corners
+    widthA = np.sqrt(((br[0] - bl[0]) ** 2) + ((br[1] - bl[1]) ** 2))
+    widthB = np.sqrt(((tr[0] - tl[0]) ** 2) + ((tr[1] - tl[1]) ** 2))
+ 
+    # ...and now for the height of our new image
+    heightA = np.sqrt(((tr[0] - br[0]) ** 2) + ((tr[1] - br[1]) ** 2))
+    heightB = np.sqrt(((tl[0] - bl[0]) ** 2) + ((tl[1] - bl[1]) ** 2))
+ 
+    # take the maximum of the width and height values to reach
+    # our final dimensions
+    maxWidth = max(int(widthA), int(widthB))
+    maxHeight = max(int(heightA), int(heightB))
+ 
+    # construct our destination points which will be used to
+    # map the screen to a top-down, "birds eye" view
+    dst = np.array([
+	[0, 0],
+	[maxWidth - 1, 0],
+	[maxWidth - 1, maxHeight - 1],
+	[0, maxHeight - 1]], dtype = "float32")
+ 
+    # calculate the perspective transform matrix and warp
+    # the perspective to grab the screen
+    M = cv2.getPerspectiveTransform(np.array(corners, dtype="float32"), dst)
+    
+    return (M,maxWidth,maxHeight)
+    
 
 ### END FUNCTIONS ###
 
 # instantiate the video capture object
-cap = cv2.VideoCapture(countCameras())
+cap = cv2.VideoCapture("video.avi")
 
 w = cap.get(3)
 h = cap.get(4)
@@ -250,24 +274,24 @@ print ""
 
 while(True):
     #print cap.get(15)
-    cap.set(15,-15);
+    #cap.set(15,-15);
 
     # capture each frame
     ret, frame = cap.read()
 
-    #cap.set(cv2.CAP_PROP_FPS,12)
+    cap.set(cv2.CAP_PROP_FPS,12)
 
-    #if frame is None:
-    #    cap.set(cv2.CAP_PROP_POS_FRAMES,0)
-    #    continue;
+    if frame is None:
+        cap.set(cv2.CAP_PROP_POS_FRAMES,0)
+        continue;
 
     # Our operations on the frame come here
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    hsvLow = np.array([75, 251, 110])
-    hsvHigh = np.array([79, 255, 211])
-    bgrLow = np.array([55, 110, 0])
-    bgrHigh = np.array([128, 211, 3])
+    hsvLow = np.array([76,208,78])
+    hsvHigh = np.array([81,255,232])
+    bgrLow = np.array([54,78,0])
+    bgrHigh = np.array([146,232,23])
 
     mask = cv2.inRange(hsv, hsvLow, hsvHigh)
     mask2 = cv2.inRange(frame, bgrLow, bgrHigh)
@@ -303,6 +327,12 @@ while(True):
             drawPoint(frame, c, (0,255,255))
             drawPoint(frame, d, (255,255,255))
 
+            M,mw,mh = findTransform(contour,(a,b,c,d))
+
+            print M
+
+            bw = cv2.warpPerspective(frame,M,(mw,mh))#(int(w),int(h)))
+
             # calculate horizontal ppi and vertical ppi
             horizontalPPI = distance(a,b)/20; #20 inches width
             verticalPPI = distance(a,d)/14; #14 inches height
@@ -316,7 +346,7 @@ while(True):
     else:
         cv2.imshow('frame',bw)
     
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(0) & 0xFF == ord('q'):
         break
     
 
