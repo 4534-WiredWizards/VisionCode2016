@@ -6,6 +6,11 @@ import random
 ### GLOBALS ###
 
 displayThreshold = False
+cameraRMS = 0.283286598231
+cameraMatrix = np.float32([[1.12033194e+03, 0.00000000e+00, 6.49786694e+02],
+                           [0.00000000e+00, 1.11455896e+03, 3.80918277e+02],
+                           [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
+cameraDistortion = np.float32([0.15190902, -0.78835469, 0.00402702, -0.00291226, -1.00032999])
 
 ### END GLOBALS ###
 ### FUNCTIONS ###
@@ -232,8 +237,7 @@ def findTransform(contour,corners):
     maxWidth = max(int(widthA), int(widthB))
     maxHeight = max(int(heightA), int(heightB))
  
-    # construct our destination points which will be used to
-    # map the screen to a top-down, "birds eye" view
+    # construct our destination points
     dst = np.array([
 	[0, 0],
 	[maxWidth - 1, 0],
@@ -331,7 +335,16 @@ while(True):
 
             print M
 
+            A = M[0][1];
+            B = M[1][0];
+            print "A=",A
+            print "B=",B
+
             bw = cv2.warpPerspective(frame,M,(mw,mh))#(int(w),int(h)))
+
+            ret,rvec,tvec = cv2.solvePnP(np.float32([list(a),list(b),list(c),list(d)]),bw,cameraMatrix,cameraDistortion)
+
+            print (ret,rvec,tvec)
 
             # calculate horizontal ppi and vertical ppi
             horizontalPPI = distance(a,b)/20; #20 inches width
