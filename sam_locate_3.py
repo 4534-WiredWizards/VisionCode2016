@@ -7,9 +7,9 @@ import random
 
 displayThreshold = False
 cameraRMS = 0.283286598231
-cameraMatrix = np.float32([[1.12033194e+03, 0.00000000e+00, 6.49786694e+02],
-                           [0.00000000e+00, 1.11455896e+03, 3.80918277e+02],
-                           [0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])
+cameraMatrix = np.float32([[1.12033194e+03, 0.0, 6.49786694e+02],
+                           [0.0, 1.11455896e+03, 3.80918277e+02],
+                           [0.0, 0.0, 1.0]])
 cameraDistortion = np.float32([0.15190902, -0.78835469, 0.00402702, -0.00291226, -1.00032999])
 
 ### END GLOBALS ###
@@ -335,14 +335,22 @@ while(True):
 
             print M
 
-            A = M[0][1];
-            B = M[1][0];
-            print "A=",A
-            print "B=",B
-
             bw = cv2.warpPerspective(frame,M,(mw,mh))#(int(w),int(h)))
 
-            ret,rvec,tvec = cv2.solvePnP(np.float32([list(a),list(b),list(c),list(d)]),bw,cameraMatrix,cameraDistortion)
+            a2 = list(a)
+            a2.append(0.0)
+            b2 = list(b)
+            b2.append(0.0)
+            c2 = list(c)
+            c2.append(0.0)
+            d2 = list(d)
+            d2.append(0.0)
+
+            objectPoints = np.array([a2,b2,c2,d2],dtype = "float32")
+
+            print objectPoints
+
+            ret,rvec,tvec = cv2.solvePnP(objectPoints,bw,cameraMatrix,cameraDistortion)
 
             print (ret,rvec,tvec)
 
