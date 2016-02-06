@@ -6,13 +6,27 @@ import random
 ### GLOBALS ###
 
 displayThreshold = False
+### END GLOBALS ###
+### CALIBRATION ###
+
+# camera calibration
 cameraRMS = 0.283286598231
 cameraMatrix = np.float32([[1.12033194e+03, 0.0, 6.49786694e+02],
                            [0.0, 1.11455896e+03, 3.80918277e+02],
                            [0.0, 0.0, 1.0]])
 cameraDistortion = np.float32([0.15190902, -0.78835469, 0.00402702, -0.00291226, -1.00032999])
 
-### END GLOBALS ###
+# color calibration
+calibrationTuple = ((58, 193, 55), (70, 255, 229), (6, 55, 0), (67, 229, 18))
+calLowHSV, calHighHSV, calLowBGR, calHighBGR = calibrationTuple
+
+# angle function values
+angleFunc1A = -90.535724570955
+angleFunc1B = 45.247456281206
+angleFunc2A = -5.511621418651
+angleFunc2B = 24.318446167847
+
+### END CALIBRATION ###
 ### FUNCTIONS ###
 
 def clickFunc(evt,x,y,flags,param):
@@ -322,11 +336,44 @@ def mat2euler(M, cy_thresh=None):
         x = 0.0
     return z, y, x
 
+def estimateAngleFunction1(thetaY):
+    result = 0
+
+    result += angleFunc1A
+
+    try:
+        result += angleFunc1B*math.log(thetaY)
+    except ValueError:
+        result = -999
+    
+    return result
+
+def estimateAngleFunction2(thetaY):
+    thetaY = -thetaY
+    thetaY += 7
+
+    result = 0
+
+    result += angleFunc2A
+
+    try:
+        result += angleFunc2B*math.log(thetaY)
+    except ValueError:
+        result = -999
+
+    # subtract for correction
+    try:
+        result -= math.log(thetaY)
+    except ValueError:
+        result = -999
+    
+    return result
+
 
 ### END FUNCTIONS ###
 
 # instantiate the video capture object
-cap = cv2.VideoCapture("video.avi")
+cap = cv2.VideoCapture("angles2.avi")
 
 w = cap.get(3)
 h = cap.get(4)
@@ -355,6 +402,9 @@ while(True):
     # capture each frame
     ret, frame = cap.read()
 
+    # flip the frame
+    frame = cv2.flip(frame,1)
+
     cap.set(cv2.CAP_PROP_FPS,12)
 
     if frame is None:
@@ -364,10 +414,10 @@ while(True):
     # Our operations on the frame come here
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    hsvLow = np.array([76,208,78])
-    hsvHigh = np.array([81,255,232])
-    bgrLow = np.array([54,78,0])
-    bgrHigh = np.array([146,232,23])
+    hsvLow = np.array(list(calLowHSV))
+    hsvHigh = np.array(list(calHighHSV))
+    bgrLow = np.array(list(calLowBGR))
+    bgrHigh = np.array(list(calHighBGR))
 
     mask = cv2.inRange(hsv, hsvLow, hsvHigh)
     mask2 = cv2.inRange(frame, bgrLow, bgrHigh)
@@ -405,7 +455,7 @@ while(True):
 
             M,mw,mh = findTransform(contour,(a,b,c,d))
 
-            print M
+            #print M
 
             bw = cv2.warpPerspective(frame,M,(mw,mh))#(int(w),int(h)))
 
@@ -425,8 +475,8 @@ while(True):
             # 3d points representation of the object in (y,x,z)
             objectPoints = np.float32([[6,-10,0],[6,10,0],[-6,10,0],[-6,-10,0]])
 
-            print objectPoints
-            print imagePoints
+            #print objectPoints
+            #print imagePoints
 
             ret,rvec,tvec = cv2.solvePnP(objectPoints,imagePoints,cameraMatrix,cameraDistortion)
 
@@ -442,6 +492,10 @@ while(True):
             
             print (xTheta,yTheta,zTheta)
 
+            # attempt at calculating
+            print "Angle Function 1=",estimateAngleFunction1(yTheta)
+            print "Angle Function 2=",estimateAngleFunction2(yTheta)
+            
             # calculate horizontal ppi and vertical ppi
             horizontalPPI = distance(a,b)/20; #20 inches width
             verticalPPI = distance(a,d)/12; #12 inches height

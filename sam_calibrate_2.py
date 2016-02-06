@@ -148,7 +148,7 @@ while(True):
 
     # set the exposure of the camera
     # -11 is the max
-    cap.set(15,-11);
+    cap.set(15,-9)
 
     # capture each frame
     ret, frame = cap.read()

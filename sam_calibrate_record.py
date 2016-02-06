@@ -117,7 +117,7 @@ writer = cv2.VideoWriter();
 size = (int(cap.get(3)),int(cap.get(4)))
 print size
 # cv2.VideoWriter_fourcc(*"XVID")
-writer.open("C:/Users/Samuel/Documents/VisionCode2016/video.avi",-1,24.0,size)
+writer.open("C:/Users/Samuel/Documents/VisionCode2016/angles2.avi",-1,24.0,size)
 
 cv2.namedWindow("frame")
 cv2.setMouseCallback("frame",clickFunction)
@@ -136,7 +136,7 @@ print ""
 while(True):
     #print cap.get(15)
     print writer.isOpened()
-    cap.set(15,-15);
+    cap.set(15,-9)
 
     # capture each frame
     ret, frame = cap.read()

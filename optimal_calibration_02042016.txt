@@ -1,0 +1,6 @@
+makerspace, exposure change
+
+exposure: -9
+
+Calibration:
+((58, 193, 55), (70, 255, 229), (6, 55, 0), (67, 229, 18))

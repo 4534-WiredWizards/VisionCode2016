@@ -1,0 +1,6 @@
+At makerspace, known angle test
+
+Exposure -11
+
+Current bounds low(h,s,v) high(h,s,v) low(b,g,r) high(b,g,r)
+((60, 255, 18), (63, 255, 49), (0, 18, 0), (5, 49, 0))
