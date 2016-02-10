@@ -20,6 +20,9 @@ cameraDistortion = np.float32([0.15190902, -0.78835469, 0.00402702, -0.00291226,
 calibrationTuple = ((58, 193, 55), (70, 255, 229), (6, 55, 0), (67, 229, 18))
 calLowHSV, calHighHSV, calLowBGR, calHighBGR = calibrationTuple
 
+# exposure
+exposure = -9
+
 # angle function values
 angleFunc1A = -90.535724570955
 angleFunc1B = 45.247456281206
@@ -270,17 +273,26 @@ def estimateAngleFunction2(thetaY):
     return result
 
 
+def countCameras():
+    ret = 5
+    for i in range(0,5):
+        tempCam = cv2.VideoCapture(i)
+        res = tempCam.isOpened()
+        tempCam.release()
+        print i
+        if res is True:
+            ret = i-1
+    print ret
+    return ret
+
 ### END FUNCTIONS ###
 
 # instantiate the video capture object
-cap = cv2.VideoCapture("angles2.avi")
+cap = cv2.VideoCapture(countCameras())
 
 # get the width and height
 w = cap.get(3)
 h = cap.get(4)
-
-# set exposure
-#cap.set(15, 0)
 
 # set the window as a named window so the click function can be bound
 cv2.namedWindow("frame")
@@ -300,22 +312,14 @@ print ""
 
 # infinite loop until brokwnk
 while(True):
-    #print cap.get(15)
-    #cap.set(15,-15);
+    # set exposure
+    cap.set(15,exposure);
 
     # capture each frame
     ret, frame = cap.read()
 
     # flip the frame (optional)
     #frame = cv2.flip(frame,1)
-
-    # not used
-    cap.set(cv2.CAP_PROP_FPS,12)
-
-    # if at end of video loop, restart
-    if frame is None:
-        cap.set(cv2.CAP_PROP_POS_FRAMES,0)
-        continue;
 
     # Our operations on the frame come here
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -433,7 +437,7 @@ while(True):
 
     # waitkey waits for x ms before continuing, zero means wait for a key
     # indefinitely. If key=Q, quit
-    if cv2.waitKey(0) & 0xFF == ord('q'):
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
     
 
