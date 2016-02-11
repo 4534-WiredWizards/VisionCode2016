@@ -448,14 +448,19 @@ while(True):
             #horizontalPPI = distance(a,b)/20; #20 inches width
             #verticalPPI = distance(a,d)/12; #12 inches height
 
-            width = mh
-            height = mw
+            #width = mh
+            #height = mw
             
             #print (width, height)
             #size = (width + (height * 5 / 3)) / 2
             print tvec
-            print "dist z:", estimateDistanceFunction1(tvec[2][0])
-            print "dist y:", estimateDistanceFunction2(tvec[1][0])
+
+            distZ = estimateDistanceFunction1(tvec[2][0])
+            distY = estimateDistanceFunction2(tvec[1][0])
+            distFt = math.sqrt(distZ ** 2 + distY ** 2)
+            print "dist z:", distZ
+            print "dist y:", distY
+            print "dist ft:", distFt
 
             
     
