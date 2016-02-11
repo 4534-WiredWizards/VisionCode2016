@@ -33,6 +33,9 @@ angleFunc2B = 24.318446167847
 distFunc1A = 0.08748759788249
 distFunc1B = -0.5189968934245
 
+distFunc2A = -0.1414458147376
+distFunc2B = -0.0675841969269
+
 ### END CALIBRATION ###
 ### FUNCTIONS ###
 
@@ -282,6 +285,13 @@ def estimateDistanceFunction1(translationZ):
     result += distFunc1B
     return result
 
+def estimateDistanceFunction2(translationY):
+    result = 0
+    result += distFunc2A * translationY
+    result += distFunc2B
+    return result
+
+
 def countCameras():
     ret = 5
     for i in range(0,5):
@@ -444,7 +454,8 @@ while(True):
             #print (width, height)
             #size = (width + (height * 5 / 3)) / 2
             print tvec
-            print "dist:", estimateDistanceFunction1(tvec[2][0])
+            print "dist z:", estimateDistanceFunction1(tvec[2][0])
+            print "dist y:", estimateDistanceFunction2(tvec[1][0])
 
             
     
