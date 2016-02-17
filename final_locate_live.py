@@ -20,6 +20,7 @@ cameraDistortion = np.float32([0.15190902, -0.78835469, 0.00402702, -0.00291226,
 
 # color calibration
 calibrationTuple = ((60, 208, 25), (71, 255, 124), (0, 25, 0), (36, 124, 16))
+calibrationTuple = ((60, 136, 35), (76, 255, 248), (0, 35, 0), (138, 248, 89))
 calLowHSV, calHighHSV, calLowBGR, calHighBGR = calibrationTuple
 
 # exposure
@@ -37,6 +38,8 @@ distFunc1B = -0.5189968934245
 
 distFunc2A = -0.1414458147376
 distFunc2B = -0.0675841969269
+
+cameraWidth = 580
 
 ### END CALIBRATION ###
 ### FUNCTIONS ###
@@ -87,17 +90,22 @@ def calculateAngle(before, point, after):
     b = distance(before,after)
     c = distance(before,point)
 
-    a2 = a**2;
-    b2 = b**2;
-    c2 = c**2;
+    a2 = a**2
+    b2 = b**2
+    c2 = c**2
 
-    n2ac = -2 * a * c;
+    n2ac = -2 * a * c
 
-    b2ma2mc2 = b2 - a2 - c2;
+    b2ma2mc2 = b2 - a2 - c2
 
     B = 1/math.cos(b2ma2mc2/n2ac)
 
     return math.degrees(B)
+
+def calculateCenter(centerX, width):
+    widthCenter = width / 2.0
+    centerX = centerX * 1.0
+    return (centerX - widthCenter) / widthCenter
 
 def simplifyContour(contour):
     out = [None] * len(contour)
@@ -315,6 +323,7 @@ def arbitrateValue(v1,v2):
         return -v1
     if v2 > v2:
         return v2
+    print "arbitrate failure:",v1,v2
     return -999
 
 ### END FUNCTIONS ###
@@ -423,6 +432,8 @@ while(True):
             d2 = list(d)
             #d2.append(0.0)
 
+            centerX = (a[0] + b[0] + c[0] + d[0]) / 4
+
             # 2d points representation of the object on screen in pixels
             # (y,x)
             imagePoints = np.array([a2,b2,c2,d2],dtype = "float32")
@@ -450,7 +461,7 @@ while(True):
             zTheta = math.degrees(zTheta)
 
             # print them out
-            print (xTheta,yTheta,zTheta)
+            #print (xTheta,yTheta,zTheta)
 
             # attempt at calculating
             #print "Angle Function 1=",estimateAngleFunction1(yTheta)
@@ -466,23 +477,37 @@ while(True):
             
             #print (width, height)
             #size = (width + (height * 5 / 3)) / 2
-            print tvec
+            #print tvec
 
             distZ = estimateDistanceFunction1(tvec[2][0])
             distY = estimateDistanceFunction2(tvec[1][0])
             distFt = math.sqrt(distZ ** 2 + distY ** 2)
-            print "dist z:", distZ
-            print "dist y:", distY
-            print "dist ft:", distFt
+            #print "dist z:", distZ
+            #print "dist y:", distY
+            #print "dist ft:", distFt
 
             angle = arbitrateValue(estimateAngleFunction1(yTheta),estimateAngleFunction2(yTheta))
-            distance = distFt * 12
+            dist = distFt * 12
+
+            centerValue = calculateCenter(centerX, cameraWidth)
+            
             
             # publish
-            table.putNumber('distance',distance)
+            table.putNumber('distance',dist)
             table.putNumber('angle',angle)
+            table.putNumber('center',angle)
+            print "dist:", dist
+            print "angle:", angle
+            print "centerValue:", centerValue
+        else:
+            table.putNumber('distance',-999)
+            table.putNumber('angle',-999)
+            table.putNumber('center',-999)
 
-            
+    else:
+        table.putNumber('distance',-999)
+        table.putNumber('angle',-999)
+        table.putNumber('center',-999)
     
     # Display the resulting frame
     if not displayThreshold:
