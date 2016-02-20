@@ -495,7 +495,7 @@ while(True):
             # publish
             table.putNumber('distance',dist)
             table.putNumber('angle',angle)
-            table.putNumber('center',angle)
+            table.putNumber('center',centerValue)
             print "dist:", dist
             print "angle:", angle
             print "centerValue:", centerValue
